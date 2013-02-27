@@ -45,6 +45,7 @@ namespace DiskSpaceObserver {
         }
 
         private void SendMessage(string text, bool important, bool html) {
+            const int SSL_ERROR_CODE = -2146233088;
             using (var theClient = new SmtpClient("smtp." + _mailFromServer)) {
                 using (var message = new MailMessage()) {
                     try {
@@ -71,7 +72,7 @@ namespace DiskSpaceObserver {
                         theClient.Send(message);
                     }
                     catch (Exception ex) {
-                        if (ex.HResult == -2146233088 && message != null && theClient != null) { //TODO: Поместить "магическое" число в константу. 
+                        if (ex.HResult == SSL_ERROR_CODE && message != null && theClient != null) {  
                             try {
                                 theClient.EnableSsl = false;
                                 theClient.Send(message);
