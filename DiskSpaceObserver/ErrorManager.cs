@@ -4,6 +4,8 @@ using System.Text;
 namespace DiskSpaceObserver {
     class ErrorManager {
 
+        //TODO: Добавить возможность писать в файл. 
+
         #region Public Methods
 
         public static void ProcessError(Exception ex, string extraMessage = "") {
@@ -17,7 +19,7 @@ namespace DiskSpaceObserver {
 
                 System.Diagnostics.EventLog.WriteEntry("DiskSpaceObserver", message.ToString(), System.Diagnostics.EventLogEntryType.Error);
                 var mailer = Mailer.GetMailer();
-                mailer.SendEmail("Disk Space Observer got error. See Event Log for details.", true);
+                mailer.SendEmail("Disk Space Observer got error. See Event Log for details.", true, true);
 
                 if (ex.InnerException != null) {
                     ErrorManager.ProcessError(ex.InnerException);

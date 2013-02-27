@@ -7,7 +7,7 @@ namespace DiskSpaceObserver {
             observer.CheckMachine();
             if (!observer.AllIsOk || ConfigurationManager.AppSettings["SendMailAlways"] == "yes") {
                 var mailer = Mailer.GetMailer();
-                mailer.SendEmail(observer.Message, true);
+                mailer.SendEmail(observer.Message, true, true);
             }
             System.Diagnostics.EventLog.WriteEntry("DiskSpaceObserver", "Disk Space Observer sucessfully finished.", System.Diagnostics.EventLogEntryType.Information);
         }
