@@ -19,7 +19,7 @@ namespace DiskSpaceObserver {
 
                 System.Diagnostics.EventLog.WriteEntry("DiskSpaceObserver", message.ToString(), System.Diagnostics.EventLogEntryType.Error);
                 var mailer = Mailer.GetMailer();
-                mailer.SendEmail("Disk Space Observer got error. See Event Log for details.", true, false);
+                mailer.SendEmail("Disk Space Observer error.", "Disk Space Observer got error. See Event Log for details.", true, false);
 
                 if (ex.InnerException != null) {
                     ErrorManager.ProcessError(ex.InnerException);

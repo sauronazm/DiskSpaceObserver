@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -51,7 +50,7 @@ namespace DiskSpaceObserver {
 
         private void ReadConfig() {
             try {
-                DiscsConfigurationSection section = ConfigurationManager.GetSection("DiscsConfiguration") as DiscsConfigurationSection;
+                DiscsConfigurationSection section = SettingsWrapper.DiscsConfigurationSectionWrapper.GetDiskConfigurationSection();
                 if (section.DefaultLimit > 0) {
                     _defaultLimit = section.DefaultLimit;
                 }
@@ -60,7 +59,7 @@ namespace DiskSpaceObserver {
                         _discsInfo.Add(item);
                     }
                 }
-                if (ConfigurationManager.AppSettings["MailUseHTML"] != null && ConfigurationManager.AppSettings["MailUseHTML"].ToLower() == "no") {
+                if (SettingsWrapper.AppSettingWrapper.GetMailUseHTML() != null && SettingsWrapper.AppSettingWrapper.GetMailUseHTML() == "no") {
                     _useHTML = true;
                     _messageBuiler = new PlainTextMessageBuilder();
                 }

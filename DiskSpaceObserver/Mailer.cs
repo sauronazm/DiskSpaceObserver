@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Configuration;
 using System.Net.Mail;
+using System.Runtime.InteropServices;
 
 namespace DiskSpaceObserver {
     class Mailer {
@@ -17,7 +17,6 @@ namespace DiskSpaceObserver {
         private string _mailFromServer;
         private string _mailFromPassword;
         private string _mailTo;
-        private string _mailSubject;
         private bool _mailUseSSL;
         private static Mailer _mailer;
 
@@ -27,12 +26,11 @@ namespace DiskSpaceObserver {
 
         private void ReadMailerConfig() {
             try {
-                _mailFromUsername = ConfigurationManager.AppSettings["MailFromUsername"];
-                _mailFromServer = ConfigurationManager.AppSettings["MailFromServer"];
-                _mailFromPassword = ConfigurationManager.AppSettings["MailFromPassword"];
-                _mailTo = ConfigurationManager.AppSettings["MailTo"];
-                _mailSubject = ConfigurationManager.AppSettings["MailSubject"];
-                if (ConfigurationManager.AppSettings["MailUseSSL"] != null && ConfigurationManager.AppSettings["MailUseSSL"].ToLower() == "no") {
+                _mailFromUsername = SettingsWrapper.AppSettingWrapper.GetMailFromUsername();
+                _mailFromServer = SettingsWrapper.AppSettingWrapper.GetMailFromServer();
+                _mailFromPassword = SettingsWrapper.AppSettingWrapper.GetMailFromPassword();
+                _mailTo = SettingsWrapper.AppSettingWrapper.GetMailTo();
+                if (SettingsWrapper.AppSettingWrapper.GetMailUseSSL() != null && SettingsWrapper.AppSettingWrapper.GetMailUseSSL() == "no") {
                     _mailUseSSL = false;
                 }
                 else {
@@ -44,7 +42,7 @@ namespace DiskSpaceObserver {
             }
         }
 
-        private void SendMessage(string text, bool important, bool html) {
+        private void SendMessage(string subject, string text, bool important, bool html) {
             const int SSL_ERROR_CODE = -2146233088;
             using (var theClient = new SmtpClient("smtp." + _mailFromServer)) {
                 using (var message = new MailMessage()) {
@@ -65,14 +63,14 @@ namespace DiskSpaceObserver {
                             message.To.Add(item);
                         }
                         message.Body = text;
-                        message.Subject = _mailSubject;
+                        message.Subject = subject;
                         theClient.EnableSsl = _mailUseSSL;
                         theClient.UseDefaultCredentials = false;
                         theClient.Credentials = new System.Net.NetworkCredential(fromAddress, _mailFromPassword);
                         theClient.Send(message);
                     }
                     catch (Exception ex) {
-                        if (ex.HResult == SSL_ERROR_CODE && message != null && theClient != null) {  
+                        if ( Marshal.GetHRForException(ex) == SSL_ERROR_CODE && message != null && theClient != null) {  
                             try {
                                 theClient.EnableSsl = false;
                                 theClient.Send(message);
@@ -101,8 +99,8 @@ namespace DiskSpaceObserver {
             return _mailer;
         }
 
-        public void SendEmail(string text, bool important, bool html) {
-            SendMessage(text, important, html);
+        public void SendEmail(string subject, string text, bool important, bool html) {
+            SendMessage(subject, text, important, html);
         }
 
         #endregion
