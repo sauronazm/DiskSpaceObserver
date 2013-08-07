@@ -44,7 +44,7 @@ namespace DiskSpaceObserver {
 
         private void SendMessage(string subject, string text, bool important, bool html) {
             const int SSL_ERROR_CODE = -2146233088;
-            using (var theClient = new SmtpClient("smtp." + _mailFromServer)) {
+            using (var theClient = new SmtpClient(_mailFromServer)) {
                 using (var message = new MailMessage()) {
                     try {
                         if (important) {
